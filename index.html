@@ -81,13 +81,14 @@
       font-size: 2rem;
       margin-bottom: 20px;
     }
-    /* Make canvas responsive */
+    /* Make canvas responsive and disable default touch actions */
     canvas {
       border: 4px solid #0f0;
       background: #111;
       display: block;
       max-width: 100%;
       height: auto;
+      touch-action: none;
     }
     /* Portfolio Styles */
     .portfolio {
@@ -518,22 +519,28 @@
     }
     
     // Swipe gesture detection for mobile
-    // (These listeners are added to the canvas if touch events are supported)
+    // (Using touchstart, touchmove, and touchend to detect swipe direction)
     const canvas = document.getElementById('gameCanvas');
     let touchStartX = 0;
     let touchStartY = 0;
-    const swipeThreshold = 30; // Minimum swipe distance in pixels
+    // Adjust threshold as needed (in pixels)
+    const swipeThreshold = 20;
     
     canvas.addEventListener('touchstart', function(e) {
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }, false);
     
+    // Prevent default touchmove behavior to avoid page scrolling
+    canvas.addEventListener('touchmove', function(e) {
+      e.preventDefault();
+    }, { passive: false });
+    
     canvas.addEventListener('touchend', function(e) {
-      let touchEndX = e.changedTouches[0].screenX;
-      let touchEndY = e.changedTouches[0].screenY;
-      let diffX = touchEndX - touchStartX;
-      let diffY = touchEndY - touchStartY;
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
       
       if (Math.abs(diffX) < swipeThreshold && Math.abs(diffY) < swipeThreshold) return;
       
@@ -555,16 +562,15 @@
       }
     }, false);
     
-    // Function to set the snake's direction based on swipe,
-    // ensuring no reverse direction is allowed (similar to arrow key logic)
+    // Function to set snake direction from swipe, disallowing reverse direction
     function setDirection(dx, dy) {
       if (!window.gameState) return;
-      // Allow vertical change only when snake is moving horizontally
+      // Allow vertical change only when moving horizontally
       if (dy !== 0 && window.gameState.dy === 0) {
         window.gameState.dx = 0;
         window.gameState.dy = dy;
       }
-      // Allow horizontal change only when snake is moving vertically
+      // Allow horizontal change only when moving vertically
       else if (dx !== 0 && window.gameState.dx === 0) {
         window.gameState.dx = dx;
         window.gameState.dy = 0;
