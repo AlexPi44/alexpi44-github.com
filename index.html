@@ -143,12 +143,10 @@
     #about p, #contact p {
       font-size: 1.2rem;
     }
-    /* Ensure the email fits correctly on one line */
+    /* Email link - default styling */
     #contact a {
       color: #ff0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-all;
       display: inline-block;
       max-width: 100%;
     }
@@ -268,8 +266,12 @@
         padding: 15px;
         margin: 20px 0;
       }
+      /* Adjust email styling on mobile so it fits on one line without truncation */
       #contact a {
-        font-size: 1rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: visible;
+        text-overflow: unset;
       }
     }
   </style>
