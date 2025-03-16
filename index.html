@@ -143,10 +143,12 @@
     #about p, #contact p {
       font-size: 1.2rem;
     }
-    /* Ensure the email fits nicely */
+    /* Ensure the email fits correctly on one line */
     #contact a {
       color: #ff0;
-      word-break: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       display: inline-block;
       max-width: 100%;
     }
@@ -268,7 +270,6 @@
       }
       #contact a {
         font-size: 1rem;
-        word-break: break-word;
       }
     }
   </style>
