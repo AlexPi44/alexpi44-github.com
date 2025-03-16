@@ -75,6 +75,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      position: relative;
     }
     #gameContainer h1 {
       font-size: 2rem;
@@ -221,6 +222,38 @@
       50% { transform: scale(1.08); }
       100% { transform: scale(1.05); }
     }
+    /* Mobile Controls for Snake Game */
+    #mobileControls {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      #mobileControls {
+        display: block;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2000;
+      }
+      #mobile-controls-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      #mobile-horizontal {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+      }
+      .mobile-arrow {
+        font-size: 1.5rem;
+        background: #111;
+        color: #0f0;
+        border: 4px solid #0f0;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -260,6 +293,17 @@
   <div id="gameContainer">
     <h1>RETRO SNAKE GAME</h1>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <!-- Mobile controls: visible only on mobile devices -->
+    <div id="mobileControls">
+      <div id="mobile-controls-container">
+        <button id="mobile-up" class="mobile-arrow">↑</button>
+        <div id="mobile-horizontal">
+          <button id="mobile-left" class="mobile-arrow">←</button>
+          <button id="mobile-down" class="mobile-arrow">↓</button>
+          <button id="mobile-right" class="mobile-arrow">→</button>
+        </div>
+      </div>
+    </div>
   </div>
   
   <!-- Portfolio Container -->
@@ -519,6 +563,36 @@
         window.gameState.gamePaused = false;
       }
     }
+    
+    // Mobile controls: attach event listeners to the arrow buttons (only active on mobile)
+    document.getElementById('mobile-up').addEventListener('click', function() {
+      if (!window.gameState) return;
+      if (window.gameState.dy === 0) {
+        window.gameState.dx = 0;
+        window.gameState.dy = -1;
+      }
+    });
+    document.getElementById('mobile-down').addEventListener('click', function() {
+      if (!window.gameState) return;
+      if (window.gameState.dy === 0) {
+        window.gameState.dx = 0;
+        window.gameState.dy = 1;
+      }
+    });
+    document.getElementById('mobile-left').addEventListener('click', function() {
+      if (!window.gameState) return;
+      if (window.gameState.dx === 0) {
+        window.gameState.dx = -1;
+        window.gameState.dy = 0;
+      }
+    });
+    document.getElementById('mobile-right').addEventListener('click', function() {
+      if (!window.gameState) return;
+      if (window.gameState.dx === 0) {
+        window.gameState.dx = 1;
+        window.gameState.dy = 0;
+      }
+    });
   </script>
 </body>
 </html>
