@@ -81,10 +81,13 @@
       font-size: 2rem;
       margin-bottom: 20px;
     }
+    /* Make canvas responsive */
     canvas {
       border: 4px solid #0f0;
       background: #111;
       display: block;
+      max-width: 100%;
+      height: auto;
     }
     /* Portfolio Styles */
     .portfolio {
@@ -173,7 +176,7 @@
       color: #000;
       transform: scale(1.1);
     }
-    /* Challenge Complete Overlay: shown after success (if initialSession true) or exactly 3 failures */
+    /* Challenge Complete Overlay */
     #challengeCompleteOverlay {
       position: fixed;
       top: 0;
@@ -222,42 +225,22 @@
       50% { transform: scale(1.08); }
       100% { transform: scale(1.05); }
     }
-    /* Mobile Controls for Snake Game */
-    #mobileControls {
-      display: none;
-    }
+    /* Mobile-specific adjustments */
     @media (max-width: 768px) {
-      #mobileControls {
-        display: block;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2000;
-      }
-      #mobile-controls-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      #mobile-horizontal {
-        margin-top: 10px;
-        display: flex;
-        gap: 10px;
-      }
-      .mobile-arrow {
-        font-size: 1.5rem;
-        background: #111;
-        color: #0f0;
-        border: 4px solid #0f0;
+      body {
         padding: 10px;
-        border-radius: 5px;
+      }
+      #mainHeader h1 {
+        font-size: 2rem;
+      }
+      #mainHeader p {
+        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
-  <!-- Start Overlay: instructs the user to start playing Snake -->
+  <!-- Start Overlay -->
   <div id="startOverlay">
     <div>
       <h2>Prove You're Human!</h2>
@@ -266,7 +249,7 @@
     </div>
   </div>
   
-  <!-- Challenge Complete Overlay: appears after first food in initial session or after exactly 3 failures -->
+  <!-- Challenge Complete Overlay -->
   <div id="challengeCompleteOverlay">
     <div>
       <h2 id="overlayTitle">You ate a point!</h2>
@@ -276,7 +259,7 @@
     </div>
   </div>
   
-  <!-- Portfolio View: Header, Nav, Footer -->
+  <!-- Portfolio View -->
   <header id="mainHeader">
     <h1>MY FUTURE PORTFOLIO PROJECTS</h1>
     <p>Retro style portfolio in HD 4K for 2025</p>
@@ -293,17 +276,6 @@
   <div id="gameContainer">
     <h1>RETRO SNAKE GAME</h1>
     <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <!-- Mobile controls: visible only on mobile devices -->
-    <div id="mobileControls">
-      <div id="mobile-controls-container">
-        <button id="mobile-up" class="mobile-arrow">↑</button>
-        <div id="mobile-horizontal">
-          <button id="mobile-left" class="mobile-arrow">←</button>
-          <button id="mobile-down" class="mobile-arrow">↓</button>
-          <button id="mobile-right" class="mobile-arrow">→</button>
-        </div>
-      </div>
-    </div>
   </div>
   
   <!-- Portfolio Container -->
@@ -347,12 +319,11 @@
   </footer>
   
   <script>
-    // Global flag to determine if this is an initial session
+    // Global variables for initial session and game loop ID
     let initialSession = true;
-    // Global variable to store the game loop ID
     let gameLoopId = null;
     
-    // Attach a single keydown listener that updates global game state (if exists)
+    // Keyboard arrow support for desktop
     function keyHandler(e) {
       if (!window.gameState) return;
       if (e.key === 'ArrowUp' && window.gameState.dy === 0) {
@@ -374,14 +345,13 @@
       window.snakeKeyListenerAdded = true;
     }
     
-    // Event listener for the Start button in the overlay
+    // Start button event
     document.getElementById('startBtn').addEventListener('click', function() {
       document.getElementById('startOverlay').style.display = "none";
-      // Starting from the start overlay: initialSession is true
       showGame(true);
     });
     
-    // Secondary overlay button events
+    // Overlay button events
     document.getElementById('seePortfolioAfterChallengeBtn').addEventListener('click', function() {
       hideChallengeCompleteOverlay();
       localStorage.setItem("challengePassed", "true");
@@ -389,45 +359,32 @@
     });
     document.getElementById('continuePlayingBtn').addEventListener('click', function() {
       hideChallengeCompleteOverlay();
-      // Reset failedAttempts so the next 3 collisions will trigger the failure overlay again
       window.gameState.failedAttempts = 0;
       resumeGame();
     });
     
-    // Persistent "Back to Snake" link event in portfolio nav
+    // "Back to Snake" nav link event
     document.getElementById('backToSnakeLink').addEventListener('click', function(e) {
       e.preventDefault();
-      // When returning from portfolio, set initialSession to false
       showGame(false);
     });
     
     // Functions to toggle views
     function showGame(isInitial) {
-      // Cancel any previous game loop if running
-      if (gameLoopId) {
-        cancelAnimationFrame(gameLoopId);
-      }
+      if (gameLoopId) cancelAnimationFrame(gameLoopId);
       initialSession = isInitial;
-      // Hide portfolio header, nav, and footer in game view
       document.getElementById('mainHeader').style.display = "none";
       document.getElementById('mainNav').style.display = "none";
       document.getElementById('mainFooter').style.display = "none";
-      // Hide portfolio container; show game container
       document.getElementById('portfolioContainer').style.display = "none";
       document.getElementById('gameContainer').style.display = "flex";
-      // Initialize game state and start game loop
       initSnakeGame();
     }
     function showPortfolio() {
-      // Cancel any running game loop
-      if (gameLoopId) {
-        cancelAnimationFrame(gameLoopId);
-      }
-      // Show portfolio header, nav, and footer in portfolio view
+      if (gameLoopId) cancelAnimationFrame(gameLoopId);
       document.getElementById('mainHeader').style.display = "block";
       document.getElementById('mainNav').style.display = "block";
       document.getElementById('mainFooter').style.display = "block";
-      // Show portfolio container; hide game container
       document.getElementById('portfolioContainer').style.display = "block";
       document.getElementById('gameContainer').style.display = "none";
     }
@@ -435,7 +392,7 @@
       document.getElementById('challengeCompleteOverlay').style.display = "none";
     }
     
-    // On initial load: if challengePassed flag is set, show portfolio; otherwise, show start overlay.
+    // On initial load, determine view
     window.onload = function() {
       if (localStorage.getItem("challengePassed") === "true") {
         showPortfolio();
@@ -444,9 +401,8 @@
       }
     };
     
-    // Global game state stored in window.gameState.
+    // Initialize the Snake Game
     function initSnakeGame() {
-      // Initialize global game state object and reset failure counter
       window.gameState = {
         snake: [{x: 10, y: 10}],
         snakeLength: 3,
@@ -480,12 +436,12 @@
           x: window.gameState.snake[0].x + window.gameState.dx,
           y: window.gameState.snake[0].y + window.gameState.dy
         };
-        // Check collision with walls
+        // Check for collisions with walls
         if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) {
           handleFailure();
           return;
         }
-        // Check collision with self (starting at index 1)
+        // Check for collision with self
         for (let i = 1; i < window.gameState.snake.length; i++) {
           if (window.gameState.snake[i].x === head.x && window.gameState.snake[i].y === head.y) {
             handleFailure();
@@ -498,7 +454,6 @@
           window.gameState.score++;
           window.gameState.snakeLength++;
           placeFood();
-          // If this is the initial session and first point eaten, show success overlay
           if (window.gameState.score === 1 && initialSession && !window.gameState.challengePromptShown) {
             window.gameState.challengePromptShown = true;
             window.gameState.gamePaused = true;
@@ -548,15 +503,13 @@
         window.gameState.dx = 1;
         window.gameState.dy = 0;
         window.gameState.score = 0;
-        // Note: Do not reset failedAttempts here to accumulate failures in the session
         placeFood();
       }
       
-      // Start the game loop
       requestAnimationFrame(gameLoop);
     }
     
-    // Function to resume game after overlay is dismissed; resets failure counter for the resumed session.
+    // Resume game after overlay dismissal
     function resumeGame() {
       if (window.gameState) {
         window.gameState.failedAttempts = 0;
@@ -564,35 +517,59 @@
       }
     }
     
-    // Mobile controls: attach event listeners to the arrow buttons (only active on mobile)
-    document.getElementById('mobile-up').addEventListener('click', function() {
-      if (!window.gameState) return;
-      if (window.gameState.dy === 0) {
-        window.gameState.dx = 0;
-        window.gameState.dy = -1;
+    // Swipe gesture detection for mobile
+    // (These listeners are added to the canvas if touch events are supported)
+    const canvas = document.getElementById('gameCanvas');
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const swipeThreshold = 30; // Minimum swipe distance in pixels
+    
+    canvas.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, false);
+    
+    canvas.addEventListener('touchend', function(e) {
+      let touchEndX = e.changedTouches[0].screenX;
+      let touchEndY = e.changedTouches[0].screenY;
+      let diffX = touchEndX - touchStartX;
+      let diffY = touchEndY - touchStartY;
+      
+      if (Math.abs(diffX) < swipeThreshold && Math.abs(diffY) < swipeThreshold) return;
+      
+      // Determine swipe direction based on the greater movement axis
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        // Horizontal swipe
+        if (diffX > 0) {
+          setDirection(1, 0); // Swipe right
+        } else {
+          setDirection(-1, 0); // Swipe left
+        }
+      } else {
+        // Vertical swipe
+        if (diffY > 0) {
+          setDirection(0, 1); // Swipe down
+        } else {
+          setDirection(0, -1); // Swipe up
+        }
       }
-    });
-    document.getElementById('mobile-down').addEventListener('click', function() {
+    }, false);
+    
+    // Function to set the snake's direction based on swipe,
+    // ensuring no reverse direction is allowed (similar to arrow key logic)
+    function setDirection(dx, dy) {
       if (!window.gameState) return;
-      if (window.gameState.dy === 0) {
+      // Allow vertical change only when snake is moving horizontally
+      if (dy !== 0 && window.gameState.dy === 0) {
         window.gameState.dx = 0;
-        window.gameState.dy = 1;
+        window.gameState.dy = dy;
       }
-    });
-    document.getElementById('mobile-left').addEventListener('click', function() {
-      if (!window.gameState) return;
-      if (window.gameState.dx === 0) {
-        window.gameState.dx = -1;
+      // Allow horizontal change only when snake is moving vertically
+      else if (dx !== 0 && window.gameState.dx === 0) {
+        window.gameState.dx = dx;
         window.gameState.dy = 0;
       }
-    });
-    document.getElementById('mobile-right').addEventListener('click', function() {
-      if (!window.gameState) return;
-      if (window.gameState.dx === 0) {
-        window.gameState.dx = 1;
-        window.gameState.dy = 0;
-      }
-    });
+    }
   </script>
 </body>
 </html>
