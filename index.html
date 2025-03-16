@@ -76,6 +76,8 @@
       justify-content: center;
       height: 100vh;
       position: relative;
+      text-align: center;
+      padding: 10px;
     }
     #gameContainer h1 {
       font-size: 2rem;
@@ -89,6 +91,7 @@
       max-width: 100%;
       height: auto;
       touch-action: none;
+      margin: 0 auto;
     }
     /* Portfolio Styles */
     .portfolio {
@@ -104,6 +107,7 @@
       padding: 30px;
       border: 4px solid #0f0;
       transition: transform 0.3s, box-shadow 0.3s;
+      text-align: center;
     }
     .project:hover {
       transform: scale(1.05);
@@ -129,6 +133,7 @@
       margin: 3rem 0;
       padding: 20px;
       border: 4px solid #0f0;
+      text-align: center;
     }
     #about h2, #contact h2 {
       font-size: 2rem;
@@ -137,6 +142,13 @@
     }
     #about p, #contact p {
       font-size: 1.2rem;
+    }
+    /* Ensure the email fits nicely */
+    #contact a {
+      color: #ff0;
+      word-break: break-all;
+      display: inline-block;
+      max-width: 100%;
     }
     /* Start Overlay */
     #startOverlay {
@@ -237,6 +249,10 @@
       #mainHeader p {
         font-size: 1rem;
       }
+      /* Ensure portfolio items and sections are centered */
+      .portfolio {
+        padding: 0 10px;
+      }
     }
   </style>
 </head>
@@ -310,7 +326,7 @@
       <!-- Contact Section -->
       <section id="contact">
         <h2>CONTACT</h2>
-        <p>You can reach me via email at <a href="mailto:paicualexandru44@gmail.com" style="color: #ff0;">paicualexandru44@gmail.com</a>.</p>
+        <p>You can reach me via email at <a href="mailto:paicualexandru44@gmail.com">paicualexandru44@gmail.com</a>.</p>
       </section>
     </main>
   </div>
@@ -519,11 +535,9 @@
     }
     
     // Swipe gesture detection for mobile
-    // (Using touchstart, touchmove, and touchend to detect swipe direction)
     const canvas = document.getElementById('gameCanvas');
     let touchStartX = 0;
     let touchStartY = 0;
-    // Adjust threshold as needed (in pixels)
     const swipeThreshold = 20;
     
     canvas.addEventListener('touchstart', function(e) {
@@ -531,7 +545,7 @@
       touchStartY = e.changedTouches[0].screenY;
     }, false);
     
-    // Prevent default touchmove behavior to avoid page scrolling
+    // Prevent default scrolling behavior on touchmove
     canvas.addEventListener('touchmove', function(e) {
       e.preventDefault();
     }, { passive: false });
@@ -544,34 +558,27 @@
       
       if (Math.abs(diffX) < swipeThreshold && Math.abs(diffY) < swipeThreshold) return;
       
-      // Determine swipe direction based on the greater movement axis
       if (Math.abs(diffX) > Math.abs(diffY)) {
-        // Horizontal swipe
         if (diffX > 0) {
-          setDirection(1, 0); // Swipe right
+          setDirection(1, 0);
         } else {
-          setDirection(-1, 0); // Swipe left
+          setDirection(-1, 0);
         }
       } else {
-        // Vertical swipe
         if (diffY > 0) {
-          setDirection(0, 1); // Swipe down
+          setDirection(0, 1);
         } else {
-          setDirection(0, -1); // Swipe up
+          setDirection(0, -1);
         }
       }
     }, false);
     
-    // Function to set snake direction from swipe, disallowing reverse direction
     function setDirection(dx, dy) {
       if (!window.gameState) return;
-      // Allow vertical change only when moving horizontally
       if (dy !== 0 && window.gameState.dy === 0) {
         window.gameState.dx = 0;
         window.gameState.dy = dy;
-      }
-      // Allow horizontal change only when moving vertically
-      else if (dx !== 0 && window.gameState.dx === 0) {
+      } else if (dx !== 0 && window.gameState.dx === 0) {
         window.gameState.dx = dx;
         window.gameState.dy = 0;
       }
